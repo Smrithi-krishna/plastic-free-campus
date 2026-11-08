@@ -1,0 +1,87 @@
+/* =========================================================
+   Student portal: airy, light rail on desktop, tab bar on phones
+   ========================================================= */
+.shell-student { display: grid; grid-template-columns: 15.5rem minmax(0, 1fr); min-height: 100dvh; background: var(--bg); }
+.rail {
+  position: sticky; top: 0; height: 100dvh; overflow-y: auto;
+  display: flex; flex-direction: column; gap: var(--s-6);
+  padding: 1.25rem 0.9rem; background: var(--surface-sunken); border-right: 1px solid var(--border);
+}
+.rail__nav { flex: 1; }
+.rail__foot { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; padding-top: var(--s-4); border-top: 1px solid var(--border); }
+.rail__foot a { font-size: var(--text-sm); }
+.student-top { display: none; }
+.student-content { width: 100%; max-width: 72rem; margin-inline: auto; padding: clamp(1.25rem, 3.5vw, 3rem); }
+.tabbar { display: none; }
+
+@media (max-width: 900px) {
+  .shell-student { grid-template-columns: minmax(0, 1fr); }
+  .rail { display: none; }
+  .student-top {
+    position: sticky; top: 0; z-index: 20; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
+    padding: 0.5rem 1rem; background: var(--bg); border-bottom: 1px solid var(--border);
+  }
+  .student-top__actions { display: flex; gap: 0.5rem; }
+  .student-content { padding-bottom: 6.5rem; }
+  .tabbar {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 30;
+    display: grid; grid-template-columns: repeat(5, 1fr);
+    background: var(--surface); border-top: 1px solid var(--border);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .tabbar a, .tabbar button {
+    display: grid; justify-items: center; gap: 0.15rem; padding: 0.55rem 0.25rem 0.5rem;
+    border: 0; background: none; color: var(--text-muted); font-size: 0.72rem; font-weight: 600; text-decoration: none; cursor: pointer;
+  }
+  .tabbar a[aria-current='page'] { color: var(--brand); box-shadow: inset 0 2px 0 var(--action); }
+}
+
+/* =========================================================
+   Staff portal: dense console with a forest top bar,
+   persistent scan field and task-grouped navigation
+   ========================================================= */
+.shell-staff {
+  display: grid; grid-template-columns: 14.5rem minmax(0, 1fr); grid-template-rows: auto 1fr;
+  grid-template-areas: 'top top' 'nav main'; min-height: 100dvh; background: var(--surface-sunken);
+  font-size: var(--text-sm);
+}
+.shell-staff .btn { min-height: 38px; }
+.shell-staff .btn--sm { min-height: 32px; }
+.staff-top {
+  grid-area: top; position: sticky; top: 0; z-index: 40;
+  display: flex; align-items: center; gap: 1rem; padding: 0.5rem 1rem;
+  background: var(--topbar-bg); color: var(--topbar-fg);
+}
+.staff-top .logo__word { color: var(--topbar-fg); }
+.staff-top .icon-btn { border-color: rgba(255, 255, 255, 0.25); color: var(--topbar-fg); }
+.staff-top .icon-btn:hover { background: rgba(255, 255, 255, 0.12); }
+.staff-top__menu { display: none; }
+.staff-top__user { margin-left: auto; flex: none; display: flex; align-items: center; gap: 0.75rem; white-space: nowrap; }
+.staff-top__user span { opacity: 0.85; }
+.scan-field { flex: 1 1 auto; min-width: 0; max-width: 28rem; display: flex; align-items: center; gap: 0.5rem; padding: 0 0.75rem; border-radius: var(--r-md); background: var(--topbar-field); border: 1px solid transparent; }
+.scan-field:focus-within { border-color: rgba(255, 255, 255, 0.7); }
+.scan-field input { flex: 1; width: 100%; min-width: 0; height: 38px; background: transparent; border: 0; color: var(--topbar-fg); outline: none; }
+.scan-field input::placeholder { color: rgba(255, 255, 255, 0.7); }
+.staff-nav { grid-area: nav; padding: 1rem 0.6rem; background: var(--surface); border-right: 1px solid var(--border); overflow-y: auto; position: sticky; top: 3.5rem; height: calc(100dvh - 3.5rem); }
+.staff-main { grid-area: main; min-width: 0; padding: clamp(1rem, 2vw, 1.75rem); }
+.staff-scrim { display: none; }
+.shell-staff .page-head h1 { font-size: var(--text-xl); }
+.shell-staff .page-head { margin-bottom: var(--s-5); }
+
+@media (max-width: 1000px) {
+  .shell-staff { grid-template-columns: minmax(0, 1fr); grid-template-areas: 'top' 'main'; }
+  .staff-top__menu { display: inline-grid; }
+  .staff-top__user span { display: none; }
+  .staff-nav {
+    position: fixed; top: 0; left: 0; bottom: 0; z-index: 50; width: min(17rem, 86vw); height: auto;
+    transform: translateX(-100%); visibility: hidden;
+    transition: transform var(--dur) var(--ease), visibility 0s linear var(--dur);
+  }
+  .staff-nav[data-open='true'] { transform: none; visibility: visible; transition-delay: 0s; }
+  .staff-scrim[data-open='true'] { display: block; position: fixed; inset: 0; z-index: 45; background: var(--scrim); }
+}
+@media (max-width: 560px) {
+  .staff-top { gap: 0.5rem; padding-inline: 0.6rem; }
+  .staff-top__user { gap: 0.5rem; }
+  .staff-top .logo__word { display: none; }
+}
