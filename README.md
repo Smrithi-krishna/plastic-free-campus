@@ -409,6 +409,7 @@ Install the backend dependencies:
 pip install -r requirements.txt
 ```
 
+<<<<<<< HEAD
 Load demo data (outlets, containers and the demo accounts below), then start the API:
 
 ```bash
@@ -417,11 +418,23 @@ uvicorn app.main:app --reload
 ```
 
 The API runs at `http://localhost:8000/api`, which is where the frontend looks by default. Interactive API docs are at:
+=======
+Configure the database connection and other required environment variables using the project's `.env.example` as a reference.
+
+Start the FastAPI application using the project's configured entry point. For example, if the application instance is exposed as `app` in `app.py`:
+
+```bash
+uvicorn app:app --reload
+```
+
+The API documentation is available at:
+>>>>>>> origin/main
 
 ```text
 http://127.0.0.1:8000/docs
 ```
 
+<<<<<<< HEAD
 With both running, open `http://localhost:5173/plastic-free-campus/`.
 
 **Demo accounts** (from `seed.py`; change them before real use):
@@ -450,6 +463,22 @@ export DATABASE_URL="mysql+pymysql://root:yourpassword@localhost:3306/plastic_fr
 3. Run `python seed.py`. Tables are created automatically.
 
 To start over with fresh demo data, delete `backend/plastic_free_campus.db` and run `python seed.py` again.
+=======
+### 4. Database Setup
+
+1. Install and start MySQL 8.0.
+2. Create the database named `plastic_free_campus`, if it has not already been created.
+3. Configure the database credentials in the backend environment.
+4. Run the project's database initialization or seed command.
+
+For the current project setup, the seed command is:
+
+```bash
+python app.py seed
+```
+
+Run it from the backend directory if that is where `app.py` is located.
+>>>>>>> origin/main
 
 ## 🔐 Environment Configuration
 
