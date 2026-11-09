@@ -1,0 +1,152 @@
+/* Design tokens. Light is the default; dark is a hand-tuned set, not an inversion. */
+:root {
+  --font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --font-body: 'Instrument Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  /* Type scale, 1.25 ratio */
+  --text-xs: 0.8125rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-md: 1.25rem;
+  --text-lg: 1.563rem;
+  --text-xl: 1.953rem;
+  --text-2xl: 2.441rem;
+  --text-3xl: 3.052rem;
+  --text-display: clamp(2.6rem, 6.2vw, 4.75rem);
+
+  /* Space */
+  --s-1: 0.25rem;
+  --s-2: 0.5rem;
+  --s-3: 0.75rem;
+  --s-4: 1rem;
+  --s-5: 1.5rem;
+  --s-6: 2rem;
+  --s-7: 3rem;
+  --s-8: 4.5rem;
+  --s-9: 7rem;
+
+  /* Shape: small radii on controls, one larger radius for sheets */
+  --r-sm: 4px;
+  --r-md: 6px;
+  --r-lg: 12px;
+  --r-pill: 999px;
+
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --dur-fast: 150ms;
+  --dur: 220ms;
+
+  /* Brand palette (raw) */
+  --forest-900: #0b2a1f;
+  --forest-800: #12392b;
+  --forest-700: #1b4d3a;
+  --emerald-600: #0b7f51; /* AA with white text */
+  --emerald-500: #12a66a; /* highlights and graphics only */
+  --sage-50: #f5f9f4;
+  --sage-100: #eef3ec;
+  --sage-200: #dce7dc;
+
+  /* Semantic: surfaces */
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --surface-sunken: var(--sage-50);
+  --surface-tint: var(--sage-100);
+  --scrim: rgba(11, 42, 31, 0.5);
+
+  /* Semantic: text */
+  --text: #10241c;
+  --text-muted: #55655c;
+  --text-faint: #7b8a81;
+
+  /* Semantic: lines */
+  --border: #d9e2da;
+  --border-strong: #b7c6bb;
+  --input-border: #7a8c81;
+
+  /* Semantic: brand and action */
+  --brand: #12392b;
+  --on-brand: #ffffff;
+  --action: var(--emerald-600);
+  --action-hover: #096a43;
+  --on-action: #ffffff;
+  --focus: #0b7f51;
+  --link: #0b6b44;
+
+  /* Semantic: status. Always paired with a label or icon, never colour alone. */
+  --ok-bg: #e3f3ea;
+  --ok-fg: #0b6b44;
+  --info-bg: #e6eef5;
+  --info-fg: #27506f;
+  --warn-bg: #fbf0d9;
+  --warn-fg: #8a5a0b;
+  --danger-bg: #f8e4df;
+  --danger-fg: #9a3324;
+  --danger-solid: #9a3324;
+  --on-danger: #ffffff;
+
+  /* Green Points get their own colour so they never read as money */
+  --points-bg: #eef4cf;
+  --points-fg: #4a5e0a;
+
+  /* Staff top bar */
+  --topbar-bg: #12392b;
+  --topbar-fg: #ffffff;
+  --topbar-field: rgba(255, 255, 255, 0.12);
+
+  /* Charts */
+  --chart-1: #12392b;
+  --chart-2: #0b7f51;
+  --chart-3: #b7791f;
+  --chart-4: #27506f;
+  --chart-5: #9a3324;
+  --chart-grid: #e3ebe4;
+}
+
+[data-theme='dark'] {
+  --bg: #0b1511;
+  --surface: #111f19;
+  --surface-sunken: #0e1a15;
+  --surface-tint: #172a22;
+  --scrim: rgba(0, 0, 0, 0.65);
+
+  --text: #e6efe9;
+  --text-muted: #9fb3a8;
+  --text-faint: #6f8378;
+
+  --border: #24382f;
+  --border-strong: #35503f;
+  --input-border: #5a7767;
+
+  --brand: #7fd1a8;
+  --on-brand: #07150e;
+  --action: #2fbf84;
+  --action-hover: #4ccf97;
+  --on-action: #06130d;
+  --focus: #4ccf97;
+  --link: #7fd1a8;
+
+  --ok-bg: #14301f;
+  --ok-fg: #7fd1a8;
+  --info-bg: #172833;
+  --info-fg: #8db8d8;
+  --warn-bg: #33270e;
+  --warn-fg: #e3b964;
+  --danger-bg: #351b16;
+  --danger-fg: #f0a596;
+  --danger-solid: #e0705c;
+  --on-danger: #1a0a07;
+
+  --points-bg: #263010;
+  --points-fg: #c4db6b;
+
+  --topbar-bg: #0f241b;
+  --topbar-fg: #e6efe9;
+  --topbar-field: rgba(255, 255, 255, 0.08);
+
+  --chart-1: #7fd1a8;
+  --chart-2: #2fbf84;
+  --chart-3: #e3b964;
+  --chart-4: #8db8d8;
+  --chart-5: #f0a596;
+  --chart-grid: #1d3128;
+}

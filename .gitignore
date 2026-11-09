@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+
+# Builds
+frontend/dist/
+
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+.pytest_cache/
+
+# Local databases and secrets
+*.db
+.env
+.env.local
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Nested dependencies and environment files
+**/venv/
+**/.venv/
+.env.*
+!.env.example
