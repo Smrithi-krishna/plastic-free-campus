@@ -1,10 +1,20 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { QrCode, Wallet, Award, ArrowUpRight, ArrowDownRight, RefreshCw, Sparkles, ShieldCheck, CheckCircle2 } from 'lucide-react';
+import { QrCode, Wallet, Award, ArrowUpRight, ArrowDownRight, RefreshCw, Sparkles, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 
 export default function StudentDashboard() {
   const { user } = useAuth();
+  const [points, setPoints] = useState(450);
+  const [activeCount, setActiveCount] = useState(0);
+
+  useEffect(() => {
+    const savedPoints = localStorage.getItem('pfc_user_points');
+    if (savedPoints) setPoints(parseInt(savedPoints, 10));
+
+    const savedBorrowed = JSON.parse(localStorage.getItem('pfc_borrowed') || '[]');
+    setActiveCount(savedBorrowed.length);
+  }, []);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
@@ -80,10 +90,10 @@ export default function StudentDashboard() {
             </div>
           </div>
           <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '0.2rem' }}>
-            {user?.points || 450} pts
+            {points} pts
           </div>
           <div style={{ fontSize: '0.8rem', color: 'var(--brand, #10b981)', fontWeight: 600 }}>
-            +50 pts this week (Top 10%)
+            Earn +50 pts per return
           </div>
         </div>
 
@@ -95,10 +105,10 @@ export default function StudentDashboard() {
             </div>
           </div>
           <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '0.2rem' }}>
-            ₹{user?.walletBalance?.toFixed(2) || '120.00'}
+            ₹120.00
           </div>
           <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-            Refundable container deposits held: ₹50
+            Refundable deposits active
           </div>
         </div>
 
@@ -110,71 +120,37 @@ export default function StudentDashboard() {
             </div>
           </div>
           <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '0.2rem' }}>
-            1 Borrowed
+            {activeCount} Borrowed
           </div>
           <div style={{ fontSize: '0.8rem', color: '#d97706', fontWeight: 600 }}>
-            Due in 36 hours (Central Canteen)
+            {activeCount > 0 ? 'Due within 48 hours' : 'All returned!'}
           </div>
         </div>
 
       </div>
 
-      {/* Quick Actions & Recent Activity */}
+      {/* Quick Actions */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
-        
-        {/* Quick Actions */}
         <div style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--border)', borderRadius: '20px', padding: '1.75rem' }}>
           <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '1.25rem' }}>
             Quick Actions
           </h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-            <Link to="/student/borrow" style={{ display: 'flex', alignItems: 'center', justifyContent: 'between', padding: '1rem', borderRadius: '14px', border: '1px solid var(--border)', backgroundColor: 'var(--surface)', textDecoration: 'none', color: 'var(--text-main)', fontWeight: 600 }}>
+            <Link to="/student/borrow" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem', borderRadius: '14px', border: '1px solid var(--border)', backgroundColor: 'var(--surface)', textDecoration: 'none', color: 'var(--text-main)', fontWeight: 600 }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                 <QrCode size={20} style={{ color: 'var(--brand)' }} /> Borrow New Container
               </span>
               <ArrowUpRight size={18} style={{ color: 'var(--text-muted)' }} />
             </Link>
 
-            <Link to="/student/return" style={{ display: 'flex', alignItems: 'center', justifyContent: 'between', padding: '1rem', borderRadius: '14px', border: '1px solid var(--border)', backgroundColor: 'var(--surface)', textDecoration: 'none', color: 'var(--text-main)', fontWeight: 600 }}>
+            <Link to="/student/return" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem', borderRadius: '14px', border: '1px solid var(--border)', backgroundColor: 'var(--surface)', textDecoration: 'none', color: 'var(--text-main)', fontWeight: 600 }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                 <RefreshCw size={20} style={{ color: '#2563eb' }} /> Return Container
               </span>
               <ArrowDownRight size={18} style={{ color: 'var(--text-muted)' }} />
             </Link>
-
-            <Link to="/student/rewards" style={{ display: 'flex', alignItems: 'center', justifyContent: 'between', padding: '1rem', borderRadius: '14px', border: '1px solid var(--border)', backgroundColor: 'var(--surface)', textDecoration: 'none', color: 'var(--text-main)', fontWeight: 600 }}>
-              <span style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                <Award size={20} style={{ color: '#d97706' }} /> Redeem Swag & Vouchers
-              </span>
-              <ArrowUpRight size={18} style={{ color: 'var(--text-muted)' }} />
-            </Link>
           </div>
         </div>
-
-        {/* Recent Transactions */}
-        <div style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--border)', borderRadius: '20px', padding: '1.75rem' }}>
-          <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '1.25rem' }}>
-            Recent Loop Activity
-          </h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: '0.75rem', borderBottom: '1px solid var(--border)' }}>
-              <div>
-                <div style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--text-main)' }}>Borrowed Stainless Steel Lunchbox</div>
-                <div style={{ fontSize: '0.775rem', color: 'var(--text-muted)' }}>Central Canteen • Today, 12:30 PM</div>
-              </div>
-              <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#d97706', backgroundColor: 'rgba(245, 158, 11, 0.12)', padding: '0.2rem 0.6rem', borderRadius: '9999px' }}>Active</span>
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: '0.75rem', borderBottom: '1px solid var(--border)' }}>
-              <div>
-                <div style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--text-main)' }}>Returned Tumbler & Earned +50 Pts</div>
-                <div style={{ fontSize: '0.775rem', color: 'var(--text-muted)' }}>North Campus Drop-Bin • Yesterday</div>
-              </div>
-              <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--brand)', backgroundColor: 'rgba(16, 185, 129, 0.12)', padding: '0.2rem 0.6rem', borderRadius: '9999px' }}>Completed</span>
-            </div>
-          </div>
-        </div>
-
       </div>
 
     </div>

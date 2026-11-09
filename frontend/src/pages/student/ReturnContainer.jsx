@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { RefreshCw, CheckCircle2, QrCode, AlertCircle, Award } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
@@ -7,18 +7,27 @@ export default function ReturnContainer() {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  const [containerId, setContainerId] = useState('CNT-101');
+  const [activeBorrowList, setActiveBorrowList] = useState([]);
+  const [selectedId, setSelectedId] = useState('');
   const [returnPoint, setReturnPoint] = useState('Central Campus Automated Drop-Bin');
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    const saved = JSON.parse(localStorage.getItem('pfc_borrowed') || '[]');
+    setActiveBorrowList(saved);
+    if (saved.length > 0) {
+      setSelectedId(saved[0].id);
+    }
+  }, []);
+
   const handleReturn = (e) => {
     e.preventDefault();
     setError('');
 
-    if (!containerId.trim()) {
-      setError('Please specify container ID to return.');
+    if (!selectedId) {
+      setError('No active containers found to return.');
       return;
     }
 
@@ -28,13 +37,32 @@ export default function ReturnContainer() {
       setLoading(false);
       setSuccess(true);
 
+      // 1. Remove from active borrowed list
       const existing = JSON.parse(localStorage.getItem('pfc_borrowed') || '[]');
-      const updated = existing.filter(item => item.id !== containerId);
+      const updated = existing.filter(item => item.id !== selectedId);
       localStorage.setItem('pfc_borrowed', JSON.stringify(updated));
+
+      // 2. Increment Green Points (+50)
+      const currentPoints = parseInt(localStorage.getItem('pfc_user_points') || '450', 10);
+      const newPoints = currentPoints + 50;
+      localStorage.setItem('pfc_user_points', newPoints.toString());
+
+      // 3. Record Credit Transaction
+      const existingTxns = JSON.parse(localStorage.getItem('pfc_transactions') || '[]');
+      const newTxn = {
+        id: `TXN-${Math.floor(100 + Math.random() * 900)}`,
+        title: `Container Return Refund (${selectedId})`,
+        type: 'Credit',
+        amount: '+₹50.00',
+        date: 'Just now',
+        status: 'Completed',
+        canteen: returnPoint
+      };
+      localStorage.setItem('pfc_transactions', JSON.stringify([newTxn, ...existingTxns]));
 
       setTimeout(() => {
         navigate('/student/containers');
-      }, 1800);
+      }, 1500);
     }, 800);
   };
 
@@ -45,7 +73,7 @@ export default function ReturnContainer() {
           Return Container
         </h1>
         <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem' }}>
-          Drop container into any automated campus bin or scan QR at staff return counter for instant deposit refund.
+          Select your active container to return at any automated campus drop-bin for an instant deposit refund.
         </p>
       </div>
 
@@ -58,9 +86,19 @@ export default function ReturnContainer() {
             </div>
             <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '0.5rem' }}>Return Verified!</h3>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginBottom: '1rem' }}>
-              Container <strong>{containerId}</strong> successfully returned. ₹50 refunded to your wallet + <strong style={{ color: 'var(--brand)' }}>+50 Green Points</strong> earned!
+              Container successfully returned. Deposit refunded + <strong style={{ color: 'var(--brand)' }}>+50 Green Points</strong> earned!
             </p>
-            <div style={{ fontSize: '0.85rem', color: 'var(--brand)', fontWeight: 600 }}>Returning to My Containers...</div>
+            <div style={{ fontSize: '0.85rem', color: 'var(--brand)', fontWeight: 600 }}>Updating My Containers...</div>
+          </div>
+        ) : activeBorrowList.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '2rem 0' }}>
+            <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem' }}>You have no active borrowed containers to return right now.</p>
+            <button
+              onClick={() => navigate('/student/find')}
+              style={{ padding: '0.75rem 1.5rem', borderRadius: '12px', backgroundColor: 'var(--brand)', color: '#ffffff', fontWeight: 700, border: 'none', cursor: 'pointer' }}
+            >
+              Find Containers to Borrow
+            </button>
           </div>
         ) : (
           <form onSubmit={handleReturn} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
@@ -73,19 +111,19 @@ export default function ReturnContainer() {
 
             <div>
               <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, marginBottom: '0.5rem', color: 'var(--text-main)' }}>
-                Container ID / QR Code
+                Select Active Container to Return
               </label>
-              <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                <QrCode size={18} style={{ position: 'absolute', left: '14px', color: 'var(--text-muted)' }} />
-                <input
-                  type="text"
-                  required
-                  value={containerId}
-                  onChange={(e) => setContainerId(e.target.value)}
-                  placeholder="e.g. CNT-101"
-                  style={{ width: '100%', padding: '0.85rem 1rem 0.85rem 2.6rem', borderRadius: '12px', border: '1px solid var(--border)', backgroundColor: 'var(--surface)', color: 'var(--text-main)', fontSize: '0.95rem', outline: 'none' }}
-                />
-              </div>
+              <select
+                value={selectedId}
+                onChange={(e) => setSelectedId(e.target.value)}
+                style={{ width: '100%', padding: '0.85rem 1rem', borderRadius: '12px', border: '1px solid var(--border)', backgroundColor: 'var(--surface)', color: 'var(--text-main)', fontSize: '0.95rem', fontWeight: 600, outline: 'none' }}
+              >
+                {activeBorrowList.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.id} - {item.name} ({item.canteen})
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div>
@@ -107,7 +145,7 @@ export default function ReturnContainer() {
             <div style={{ padding: '1rem', borderRadius: '14px', backgroundColor: 'var(--surface)', border: '1px solid var(--border)', fontSize: '0.875rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--brand)', fontWeight: 700 }}>
                 <Award size={18} />
-                <span>Bonus Reward: +50 Green Points upon successful return</span>
+                <span>Bonus Reward: +50 Green Points + Deposit Refund upon return</span>
               </div>
             </div>
 

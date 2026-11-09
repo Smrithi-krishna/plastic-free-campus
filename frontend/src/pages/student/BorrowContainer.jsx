@@ -3,6 +3,14 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { QrCode, ShieldCheck, CheckCircle2, AlertCircle, ArrowRight } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 
+const CONTAINER_CATALOG = {
+  'CNT-101': { name: 'Stainless Steel Lunchbox (Large)', deposit: 50 },
+  'CNT-102': { name: 'Insulated Thermal Soup Bowl', deposit: 40 },
+  'CNT-103': { name: 'Stainless Steel Tumbler (500ml)', deposit: 30 },
+  'CNT-104': { name: 'Bento Compartment Box', deposit: 60 },
+  'CNT-105': { name: 'Eco-Cup with Lid', deposit: 20 },
+};
+
 export default function BorrowContainer() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -31,17 +39,39 @@ export default function BorrowContainer() {
     setTimeout(() => {
       setLoading(false);
       setSuccess(true);
-      const existing = JSON.parse(localStorage.getItem('pfc_borrowed') || '[]');
+
+      const upperId = containerId.toUpperCase();
+      const containerInfo = CONTAINER_CATALOG[upperId] || { name: `Custom Container (${upperId})`, deposit: 50 };
+
+      // 1. Save to active borrowed list
+      const existingBorrowed = JSON.parse(localStorage.getItem('pfc_borrowed') || '[]');
       const newBorrow = {
-        id: containerId,
-        name: containerId === 'CNT-102' ? 'Insulated Thermal Soup Bowl' : 'Stainless Steel Lunchbox (Large)',
+        id: upperId,
+        name: containerInfo.name,
         canteen: canteen,
         borrowDate: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         dueDate: 'Within 48 hours',
-        deposit: '₹50',
+        deposit: `₹${containerInfo.deposit}`,
         status: 'Active'
       };
-      localStorage.setItem('pfc_borrowed', JSON.stringify([newBorrow, ...existing]));
+      localStorage.setItem('pfc_borrowed', JSON.stringify([newBorrow, ...existingBorrowed]));
+
+      // 2. Update wallet held deposits
+      const currentHeld = parseFloat(localStorage.getItem('pfc_held_deposits') || '50');
+      localStorage.setItem('pfc_held_deposits', (currentHeld + containerInfo.deposit).toString());
+
+      // 3. Record transaction
+      const existingTxns = JSON.parse(localStorage.getItem('pfc_transactions') || '[]');
+      const newTxn = {
+        id: `TXN-${Math.floor(100 + Math.random() * 900)}`,
+        title: `Container Borrow Deposit Hold (${upperId})`,
+        type: 'Debit',
+        amount: `-₹${containerInfo.deposit}.00`,
+        date: 'Just now',
+        status: 'Held',
+        canteen: canteen
+      };
+      localStorage.setItem('pfc_transactions', JSON.stringify([newTxn, ...existingTxns]));
 
       setTimeout(() => {
         navigate('/student/containers');
@@ -69,7 +99,7 @@ export default function BorrowContainer() {
             </div>
             <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '0.5rem' }}>Borrow Successful!</h3>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginBottom: '1.5rem' }}>
-              Container <strong>{containerId}</strong> successfully assigned to your student profile. ₹50 held as refundable deposit.
+              Container <strong>{containerId}</strong> successfully assigned. Deposit secured.
             </p>
             <div style={{ fontSize: '0.85rem', color: 'var(--brand)', fontWeight: 600 }}>Redirecting to My Containers...</div>
           </div>
@@ -113,17 +143,6 @@ export default function BorrowContainer() {
                 <option value="Library Snack Kiosk">Library Snack Kiosk</option>
                 <option value="Hostel Mess Block A">Hostel Mess Block A</option>
               </select>
-            </div>
-
-            <div style={{ padding: '1rem', borderRadius: '14px', backgroundColor: 'var(--surface)', border: '1px solid var(--border)', fontSize: '0.875rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Simulated Deposit:</span>
-                <strong style={{ color: 'var(--text-main)' }}>₹50.00 (Refundable)</strong>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Return Window:</span>
-                <strong style={{ color: 'var(--brand)' }}>48 Hours</strong>
-              </div>
             </div>
 
             <button

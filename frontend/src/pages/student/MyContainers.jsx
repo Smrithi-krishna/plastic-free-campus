@@ -1,15 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { RefreshCw, QrCode, CheckCircle2, Clock, MapPin, ArrowUpRight } from 'lucide-react';
-
-const INITIAL_BORROWED = [
-  { id: 'CNT-101', name: 'Stainless Steel Lunchbox (Large)', canteen: 'Central Campus Canteen', borrowDate: 'Today, 12:30 PM', dueDate: 'In 36 hours', deposit: '₹50', status: 'Active' }
-];
+import { RefreshCw, QrCode, CheckCircle2, Clock, MapPin } from 'lucide-react';
 
 export default function MyContainers() {
   const [borrowed, setBorrowed] = useState(() => {
     const saved = localStorage.getItem('pfc_borrowed');
-    return saved ? JSON.parse(saved) : INITIAL_BORROWED;
+    return saved ? JSON.parse(saved) : []; // Starts empty unless you actively borrow something!
   });
 
   useEffect(() => {
@@ -50,7 +46,7 @@ export default function MyContainers() {
           </div>
           <h3 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '0.5rem' }}>No Active Containers</h3>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginBottom: '1.5rem' }}>
-            You have returned all borrowed containers. Ready for your next meal?
+            You have no active checkouts right now. Ready for your next meal?
           </p>
           <Link 
             to="/student/find"

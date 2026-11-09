@@ -1,14 +1,21 @@
-import React from 'react';
-import { ArrowUpRight, ArrowDownRight, RefreshCw } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ArrowUpRight, ArrowDownRight } from 'lucide-react';
 
-const TRANSACTIONS = [
+const INITIAL_TXNS = [
   { id: 'TXN-901', title: 'Container Return Refund', type: 'Credit', amount: '+₹50.00', date: 'Yesterday, 2:15 PM', status: 'Completed', canteen: 'North Block Cafeteria' },
-  { id: 'TXN-902', title: 'Container Borrow Deposit Hold', type: 'Debit', amount: '-₹50.00', date: 'Today, 12:30 PM', status: 'Held', canteen: 'Central Campus Canteen' },
   { id: 'TXN-895', title: 'Wallet Top-Up via UPI', type: 'Credit', amount: '+₹200.00', date: '3 days ago', status: 'Completed', canteen: 'Online Gateway' },
-  { id: 'TXN-880', title: 'Container Return Refund', type: 'Credit', amount: '+₹50.00', date: '5 days ago', status: 'Completed', canteen: 'Library Snack Kiosk' },
 ];
 
 export default function TransactionHistory() {
+  const [transactions, setTransactions] = useState(() => {
+    const saved = localStorage.getItem('pfc_transactions');
+    return saved ? JSON.parse(saved) : INITIAL_TXNS;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('pfc_transactions', JSON.stringify(transactions));
+  }, [transactions]);
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
       <div>
@@ -22,7 +29,7 @@ export default function TransactionHistory() {
 
       <div style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--border)', borderRadius: '24px', padding: '1.5rem', boxShadow: '0 10px 30px rgba(0,0,0,0.04)' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          {TRANSACTIONS.map((txn, idx) => (
+          {transactions.map((txn, idx) => (
             <div key={idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem', borderRadius: '14px', border: '1px solid var(--border)', backgroundColor: 'var(--surface)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                 <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: txn.type === 'Credit' ? 'rgba(16, 185, 129, 0.12)' : 'rgba(239, 68, 68, 0.12)', color: txn.type === 'Credit' ? 'var(--brand)' : '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

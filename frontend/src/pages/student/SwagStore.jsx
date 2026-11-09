@@ -1,16 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Gift, CheckCircle2, ShoppingBag } from 'lucide-react';
 
 const ITEMS = [
-  { id: 1, name: 'Eco-Friendly Campus Hoodie', cost: 350, stock: 12, category: 'Merchandise' },
-  { id: 2, name: 'Stainless Steel Water Bottle', cost: 250, stock: 25, category: 'Accessories' },
-  { id: 3, name: 'Central Canteen ₹50 Food Voucher', cost: 100, stock: 150, category: 'Vouchers' },
-  { id: 4, name: 'Organic Cotton Tote Bag', cost: 150, stock: 40, category: 'Accessories' },
+  { id: 1, name: 'Eco-Friendly Campus Hoodie', cost: 150, stock: 12, category: 'Merchandise' },
+  { id: 2, name: 'Stainless Steel Water Bottle', cost: 100, stock: 25, category: 'Accessories' },
+  { id: 3, name: 'Central Canteen ₹50 Food Voucher', cost: 50, stock: 150, category: 'Vouchers' },
+  { id: 4, name: 'Organic Cotton Tote Bag', cost: 75, stock: 40, category: 'Accessories' },
 ];
 
 export default function SwagStore() {
-  const [points, setPoints] = useState(450);
+  const [points, setPoints] = useState(() => {
+    const saved = localStorage.getItem('pfc_user_points');
+    return saved ? parseInt(saved, 10) : 450;
+  });
   const [msg, setMsg] = useState('');
+
+  useEffect(() => {
+    localStorage.setItem('pfc_user_points', points.toString());
+  }, [points]);
 
   const handleRedeem = (item) => {
     if (points < item.cost) {
@@ -19,7 +26,7 @@ export default function SwagStore() {
       return;
     }
     setPoints(prev => prev - item.cost);
-    setMsg(`Successfully redeemed ${item.name}! Check your notifications for pickup/voucher details.`);
+    setMsg(`Successfully redeemed ${item.name}! Voucher code generated in notifications.`);
     setTimeout(() => setMsg(''), 4000);
   };
 
